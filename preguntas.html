@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Juego Romántico a Distancia</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+  body {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+    font-family: 'Montserrat', sans-serif;
+    color: #330022;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .container {
+    background: rgba(255, 255, 255, 0.9);
+    max-width: 500px;
+    width: 90%;
+    border-radius: 15px;
+    padding: 30px 25px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+  h1 {
+    margin-bottom: 15px;
+    font-weight: 700;
+    font-size: 2em;
+  }
+  .question {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+  }
+  .options {
+    text-align: left;
+    margin-bottom: 20px;
+  }
+  label {
+    display: block;
+    margin-bottom: 12px;
+    font-size: 1em;
+    cursor: pointer;
+    user-select: none;
+  }
+  input[type="radio"] {
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  input[type="text"] {
+    margin-top: 8px;
+    width: 95%;
+    padding: 8px 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+  }
+  button {
+    background: #cc3366;
+    border: none;
+    color: white;
+    font-size: 1.1em;
+    padding: 12px 25px;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  button:hover {
+    background: #991f45;
+  }
+  .progress {
+    font-size: 0.9em;
+    color: #550033;
+    margin-bottom: 15px;
+  }
+  .thankyou {
+    font-size: 1.3em;
+    color: #550033;
+  }
+</style>
+</head>
+<body>
+
+<div class="container" id="game-container">
+  <h1>Juego Romántico a Distancia 💌</h1>
+  <div class="progress" id="progress">Pregunta 1 de 18</div>
+  <div class="question" id="question-text"></div>
+  <form id="options-form">
+    <div class="options" id="options-container"></div>
+    <label>
+      Otra respuesta (escribe la tuya):
+      <input type="text" id="custom-answer" name="custom-answer" placeholder="Escribe aquí..." autocomplete="off" />
+    </label>
+    <button type="submit" id="next-btn">Siguiente</button>
+  </form>
+</div>
+
+<audio id="background-music" src="https://cdn.jsdelivr.net/gh/jackallencs/CDN@main/cuco-decir-adios.mp3" preload="auto"></audio>
+
+<script>
+  const questions = [
+    {q:"¿Qué es lo que más extrañas de mí cuando no estamos juntos?", options:[
+      "Tu voz que me calma el alma",
+      "Tu sonrisa que me ilumina el día",
+      "Tu presencia que me da paz",
+      "Otra respuesta (escribe la tuya)"
+    ]},
+    {q:"¿Cuál ha sido tu mensaje favorito que te he enviado?", options:[
+      "El que me hizo reír sin parar",
+      "El que me hizo sentir especial",
+      "El que me sorprendió sin esperarlo",
+      "Otra respuesta (escribe la tuya)"
+    ]},
+    {q:"¿Qué momento virtual contigo guardarías para siempre?", options:[
+      "Nuestra primera videollamada",
+      "Cuando me cantaste una canción",
+      "Cuando compartimos una broma privada",
+      "Otra respuesta (escribe la tuya)"
+    ]},
+    {q:"¿Qué cosas haces y te hacen sentir más cerca de mí?", options:[
+      "Ver tus fotos y recuerdos",
+      "Escuchar tu voz en notas de voz",
+      "Soñar con nuestro reencuentro",
+      "Otra respuesta (escribe la tuya)"
+    ]},
+    {q:"¿Qué harías si pudieras abrazarme ahora mismo por solo 10 segundos?", options:[
+      "Te apretaría fuerte y no te soltaría",
+      "Te susurraría todo lo que siento",
+      "Cerraríamos los ojos y no pensaríamos en nada",
+      "Otra respuesta (escribe la tuya)"
+    ]},
+    {q:"¿Qué palabra mía te hace sonreír sin importar el día?", options:[
+      "Mi apodo cariñoso para ti",
+      "Una frase que siempre repetimos",
+      "Un cumplido que me diste sin querer",
+      "Otra respuesta (escribe la tuya)"
+    ]},
+    {q:"¿Cómo imaginas nuestro primer reencuentro?", options:[
+      "Con un abrazo interminable",
+      "Con miradas que hablan por sí solas",
+      "Con risas nerviosas y mucha emoción",
+      "Otra respuesta (escribe la tuya)"
+    ]},
+    {q:"¿Cuál es tu parte favorita de nuestras videollamadas?", options:[
+      "Cuando me cuentas tu día",
+      "Cuando hacemos bromas tontas juntos",
+      "Cuando nos miramos sin decir nada",
+      "Otra respuesta (escribe la tuya)"
+    ]},
+    {q:"¿Qué detalle mío te ha hecho sentir más amado/a a distancia?", options:[
+      "Un mensaje sorpresa a media noche",
+      "Un regalo enviado por correo",
+      "Una canción dedicada solo para mí",
+      "Otra respuesta (escribe la tuya)"
+    ]},
+    {q:"¿Qué sorpresa virtual te gustaría recibir de mí?", options:[
+      "Un video cantando solo para mí",
+      "Una llamada inesperada y larga",
+      "Un mensaje con fotos especiales",
+      "Otra respuesta (escribe la tuya)"
+    ]},
+    {q:"¿Te gustaría que te susurre algo por llamada? ¿Qué te gustaría oír?", options:[
+      "Un 'te amo' lento y dulce",
+      "Un secreto travieso solo para ti",
+      "Una promesa de nuestro futuro juntos",
+      "Otra respuesta (escribe la tuya)"
+    ]},
+    {q:"¿Qué parte de tu cuerpo te gustaría mostrarme en una videollamada íntima?", options:[
+      "Tus labios que muerden con ganas",
+      "La curva de tu cuello donde perderme sin prisa",
+      "Tu espalda desnuda que arde en deseo",
+      "Tus senos que quiero imaginar tocando"
+    ]},
+    {q:"¿Has fantaseado conmigo mientras hablábamos por texto o videollamada?", options:[
+      "Sí, imaginando mis manos recorriendo tu piel",
+      "A veces, soñando con tus labios sobre mi cuerpo",
+      "Fantaseo con explorar cada rincón de tu cuerpo desnudo",
+      "No, prefiero que nuestras fantasías se hagan realidad"
+    ]},
+    {q:"¿Qué tipo de mensaje travieso te gustaría recibir inesperadamente?", options:[
+      "Uno que describa lo que haríamos si estuviéramos juntos ahora",
+      "Un mensaje que me haga imaginar tus caricias más íntimas",
+      "Una frase que encienda mi deseo y haga latir fuerte el corazón",
+      "Otra respuesta (escribe la tuya)"
+    ]},
+    {q:"Si esta noche tuvieras que hacerme desearte a través de la pantalla… ¿cómo lo lograrías?", options:[
+      "Enviándote un video con miradas que queman la piel",
+      "Susurrándote al oído lo que haría contigo sin pudor",
+      "Con palabras que te hagan sentir mi cuerpo cerca del tuyo",
+      "Otra respuesta (escribe la tuya)"
+    ]},
+    {q:"¿Qué parte de ti grabarías solo para mis ojos, si supieras que nadie más lo verá?", options:[
+      "Tus labios húmedos pronunciando mi nombre",
+      "Tus manos acariciando tus zonas más sensibles",
+      "La curva de tu cintura bajo la luz tenue",
+      "Tus muslos desnudos que quiero recorrer con la mirada"
+    ]},
+    {q:"¿Cuál ha sido tu fantasía más intensa conmigo mientras hablábamos a distancia?", options:[
+      "Que mis manos exploren cada rincón de tu cuerpo",
+      "Que nuestras pieles se fundan en un abrazo ardiente sin fin",
+      "Que tus labios me digan todo lo que quieres en secreto",
+      "Otra respuesta (escribe la tuya)"
+    ]},
+    {q:"Si estuviéramos en videollamada y tú pudieras controlarme por completo… ¿qué me pedirías que hiciera?", options:[
+      "Que te muestre cada parte de mi cuerpo con lentitud y deseo",
+      "Que te mande un beso que te haga perder la razón",
+      "Que te susurre al oído lo que haría contigo en secreto",
+      "Que te enseñe algo que nadie más ha visto jamás"
+    ]}
+  ];
+
+  const questionTextEl = document.getElementById('question-text');
+  const optionsContainer = document.getElementById('options-container');
+  const progressEl = document.getElementById('progress');
+  const form = document.getElementById('options-form');
+  const customAnswerInput = document.getElementById('custom-answer');
+  const nextBtn = document.getElementById('next-btn');
+  const music = document.getElementById('background-music');
+
+  let currentQuestion = 0;
+  let answers = [];
+
+  function loadQuestion() {
+    const q = questions[currentQuestion];
+    progressEl.textContent = `Pregunta ${currentQuestion + 1} de ${questions.length}`;
+    questionTextEl.textContent = q.q;
+    optionsContainer.innerHTML = '';
+    customAnswerInput.value = '';
+
+    q.options.forEach((opt, i) => {
+      const id = `opt${i}`;
+      const label = document.createElement('label');
+      label.htmlFor = id;
+      label.textContent = opt;
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'option';
+      radio.id = id;
+      radio.value = opt;
+      label.prepend(radio);
+      optionsContainer.appendChild(label);
+    });
+  }
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const selectedOption = form.option.value;
+    const customAnswer = customAnswerInput.value.trim();
+
+    if(!selectedOption && customAnswer === '') {
+      alert('Por favor, selecciona o escribe una respuesta para continuar.');
+      return;
+    }
+
+    let answer = '';
+    if(customAnswer !== '') {
+      answer = customAnswer;
+    } else {
+      answer = selectedOption;
+    }
+    answers.push({question: questions[currentQuestion].q, answer});
+    currentQuestion++;
+
+    if(currentQuestion < questions.length) {
+      loadQuestion();
+    } else {
+      showThankYou();
+      music.pause();
+    }
+  });
+
+  function showThankYou() {
+    const container = document.getElementById('game-container');
+    container.innerHTML = `
+      <h1>¡Gracias por jugar! 💖</h1>
+      <p class="thankyou">Tus respuestas han sido guardadas.</p>
+      <p class="thankyou">Nos vemos pronto para más momentos juntos.</p>
+    `;
+    console.log("Respuestas del usuario:", answers);
+    // Aquí podrías enviar las respuestas a un servidor o guardarlas localmente si quieres
+  }
+
+  // Iniciar juego y música
+  window.onload = () => {
+    loadQuestion();
+    music.volume = 0.3;
+    music.play().catch(() => {
+      // Autoplay puede fallar en algunos navegadores sin interacción
+      // Puedes agregar un botón para iniciar música si quieres
+      console.log('No se pudo reproducir música automáticamente.');
+    });
+  };
+</script>
+
+</body>
+</html>
